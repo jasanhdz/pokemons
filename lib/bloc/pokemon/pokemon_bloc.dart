@@ -42,8 +42,10 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
         pokemons: allPokemons,
         hasReachedMax: pokemons.length < limit,
       ));
+    } on ApiException catch (e) {
+      emit(PokemonError(e.message));
     } catch (e) {
-      emit(PokemonError(e.toString()));
+      emit(PokemonError('Error inesperado: $e'));
     } finally {
       isFetching = false;
     }
@@ -56,12 +58,10 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
       final pokemon =
           await pokemonService.fetchPokemonByName(event.query.toLowerCase());
       emit(PokemonLoaded(pokemons: [pokemon], hasReachedMax: true));
+    } on ApiException catch (e) {
+      emit(PokemonError(e.message));
     } catch (e) {
-      if (e is ApiException) {
-        emit(PokemonError(e.message));
-      } else {
-        emit(PokemonError('Error inesperado: $e'));
-      }
+      emit(PokemonError('Error inesperado: $e'));
     }
   }
 }

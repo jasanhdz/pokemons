@@ -1,4 +1,3 @@
-// search_bar.dart
 import 'package:flutter/material.dart';
 
 class PokemonSearchBar extends StatelessWidget {
@@ -15,7 +14,9 @@ class PokemonSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
-      decoration: InputDecoration(
+      autocorrect: false,
+      enableSuggestions: false,
+      decoration: const InputDecoration(
         hintText: 'Buscar Pokémon por nombre',
         prefixIcon: Icon(Icons.search),
         border: OutlineInputBorder(),

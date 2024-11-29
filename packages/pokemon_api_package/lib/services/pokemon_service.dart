@@ -23,8 +23,10 @@ class PokemonService {
       List<Pokemon> pokemons = await Future.wait(futures);
 
       return pokemons;
+    } on DioException catch (e) {
+      throw ApiException(_handleDioError(e));
     } catch (e) {
-      throw ApiException('Error al obtener los Pokémon: $e');
+      throw ApiException('Error inesperado: $e');
     }
   }
 
@@ -32,8 +34,10 @@ class PokemonService {
     try {
       final response = await _dio.get('pokemon/$name');
       return Pokemon.fromJson(response.data);
+    } on DioException catch (e) {
+      throw ApiException(_handleDioError(e));
     } catch (e) {
-      throw ApiException('No se pudo encontrar el Pokémon: $e');
+      throw ApiException('Error inesperado: $e');
     }
   }
 
@@ -41,8 +45,24 @@ class PokemonService {
     try {
       final response = await _dio.get('pokemon/$id');
       return Pokemon.fromJson(response.data);
+    } on DioException catch (e) {
+      throw ApiException(_handleDioError(e));
     } catch (e) {
-      throw ApiException('No se pudo encontrar el Pokémon: $e');
+      throw ApiException('Error inesperado: $e');
+    }
+  }
+
+  String _handleDioError(DioException e) {
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout) {
+      return 'Tiempo de conexión agotado. Por favor, revisa tu conexión a Internet.';
+    } else if (e.type == DioExceptionType.badResponse) {
+      return 'Error en la respuesta del servidor (${e.response?.statusCode}): ${e.response?.statusMessage}';
+    } else if (e.type == DioExceptionType.unknown) {
+      return 'Error desconocido: ${e.message}';
+    } else {
+      return 'Error al realizar la solicitud: ${e.message}';
     }
   }
 }
