@@ -1,0 +1,8 @@
+name: pokemon_api_package
+description: Paquete para manejar modelos y llamadas a la API de Pokémon.
+version: 0.0.1
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  dio: ^5.0.0
